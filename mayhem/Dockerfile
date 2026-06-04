@@ -1,10 +1,17 @@
 # Build Stage
-FROM fuzzers/atheris:2.0.7-python3.9
+FROM python:3.11-slim
 
-# Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    clang \
+    libclang-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir atheris
 
 ADD . /src
 WORKDIR /src
-RUN python3 -m pip install .
+RUN SETUPTOOLS_SCM_PRETEND_VERSION=0.0.1 python3 -m pip install .
 
 CMD ["/src/mayhem/fuzz_parse.py"]
